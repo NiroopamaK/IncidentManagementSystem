@@ -1,0 +1,140 @@
+/* Container split */
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Left side - background image (3/5 width) */
+.left-half {
+  flex: 3; /* 3 parts */
+  background-image: url('../../../assets/background.jpg');
+  background-size: cover;
+  background-position: left; /* show rightmost part */
+}
+
+/* Right side - form (2/5 width) */
+.right-half {
+  flex: 2; /* 2 parts */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+/* Form container */
+.form-container {
+  width: 80%;
+  max-width: 400px;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  color: #1e3a5a; /* dark blue text */
+}
+
+/* Heading */
+.form-box h2 {
+  text-align: center;
+  color: #2a5e8b; /* medium blue */
+  margin-bottom: 20px;
+}
+
+/* Labels */
+.form-box label {
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: 10px;
+  color: #1e3a5a; /* dark blue */
+}
+
+/* Inputs */
+.form-box input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: white;
+  color: #1e3a5a; /* dark blue */
+  margin-bottom: 10px;
+}
+
+/* Submit button */
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #2a5e8b; /* medium blue */
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #1f4770; /* darker blue */
+}
+
+/* Forgot password */
+.forgot-password {
+  font-size: 13px;
+  color: #2a5e8b; /* medium blue */
+  text-decoration: none;
+  display: block;
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* Sign Up link */
+.signup-link {
+  background: none;
+  border: none;
+  color: #2a5e8b; /* medium blue */
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+/* Error styling */
+.error {
+  color: #c0392b; /* keep red for errors */
+  font-size: 13px;
+}
+
+/* Role dropdown styling */
+.form-box select[formControlName="role"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: white;
+  color: #1e3a5a; /* dark blue */
+  margin-bottom: 10px;
+  appearance: none; /* remove default arrow for consistency */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+/* Optional: Add a subtle hover/focus effect */
+.form-box select[formControlName="role"]:focus {
+  border-color: #2a5e8b; /* medium blue */
+  outline: none;
+  box-shadow: 0 0 3px rgba(42, 94, 139, 0.5);
+}

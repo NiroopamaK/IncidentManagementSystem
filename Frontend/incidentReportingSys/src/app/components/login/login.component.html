@@ -1,0 +1,81 @@
+<div class="container">
+  <!-- Left half: background image -->
+  <div class="left-half"></div>
+
+  <!-- Right half: form -->
+  <div class="right-half">
+    <div class="form-container">
+      <div class="form-box">
+        <!-- LOGIN FORM -->
+        <div *ngIf="!isSignUp">
+          <h2>Login</h2>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+            <label>Email</label>
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="Enter Email"
+            />
+
+            <label>Password</label>
+            <input
+              type="password"
+              formControlName="password"
+              placeholder="Enter Password"
+            />
+
+            <a class="forgot-password">Forgot Password?</a>
+
+            <button type="submit" class="submit-btn">Login</button>
+          </form>
+
+          <!-- Toggle to Sign Up -->
+          <button class="signup-link" type="button" (click)="showSignUp()">
+            Don't have an account? Sign Up
+          </button>
+        </div>
+
+        <!-- SIGN UP FORM -->
+        <div *ngIf="isSignUp">
+          <h2>Sign Up</h2>
+
+          <form
+            [formGroup]="signupForm"
+            (ngSubmit)="onSignUpSubmit()"
+            novalidate
+          >
+            <label>Email</label>
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="Enter Email"
+            />
+
+            <label>Password</label>
+            <input
+              type="password"
+              formControlName="password"
+              placeholder="Enter Password"
+            />
+
+            <label>Role</label>
+            <select formControlName="role">
+              <option value="">Select Role</option>
+              <option value="admin">Admin</option>
+              <option value="reporter">User</option>
+              <option value="reviewer">Reviewer</option>
+            </select>
+
+            <button type="submit" class="submit-btn">Create Account</button>
+          </form>
+
+          <!-- Back to login -->
+          <button class="signup-link" type="button" (click)="showLogin()">
+            Back to Login
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

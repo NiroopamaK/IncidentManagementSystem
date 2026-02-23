@@ -1,0 +1,99 @@
+/* Navbar Container */
+.navbar {
+  height: 70px;
+  width: 100%;
+  background: #1e3a5a;
+  color: white;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 40px;
+  box-sizing: border-box;
+
+  position: relative;
+  z-index: 1000;
+}
+
+/* App title */
+.app-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* Profile Section */
+.profile-container {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Profile Info Layout */
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Avatar */
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #cce6ff;
+  color: #1e3a5a;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Username + Role */
+.user-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.role {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Dropdown */
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 70px;
+
+  background: white;
+  color: #1e3a5a;
+
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+
+  min-width: 160px;
+  overflow: hidden;
+}
+
+.dropdown-menu button {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdown-menu button:hover {
+  background: #f0f4f8;
+}

@@ -1,0 +1,98 @@
+<app-top-navbar></app-top-navbar>
+<div class="container">
+  <!-- LEFT SIDE -->
+  <div class="left-half">
+    <h2 class="section-title">My Reported Incidents</h2>
+
+    <div
+      *ngFor="let incident of paginatedIncidents; let i = index"
+      class="incident-box"
+    >
+      <div class="incident-row">
+        <!-- LEFT: Title -->
+        <h3 class="incident-title">
+          {{ incident.title }}
+        </h3>
+
+        <!-- RIGHT: Status + Delete + View -->
+        <div class="incident-actions">
+          <span class="status">
+            {{ incident.status }}
+          </span>
+
+          <button
+            class="delete-btn"
+            (click)="deleteIncident((currentPage - 1) * itemsPerPage + i)"
+          >
+            🗑️
+          </button>
+
+          <button
+            class="view-details-btn"
+            [ngClass]="{
+              expanded: expandedIncidents[(currentPage - 1) * itemsPerPage + i],
+            }"
+            (click)="toggleDetails((currentPage - 1) * itemsPerPage + i)"
+          >
+            <span class="arrow">⌄</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Collapsible Details -->
+      <div
+        *ngIf="expandedIncidents[(currentPage - 1) * itemsPerPage + i]"
+        class="incident-details"
+      >
+        <p><strong>Description:</strong> {{ incident.description }}</p>
+        <p><strong>Assigned to:</strong> {{ incident.assigned_to || "N/A" }}</p>
+        <ul>
+          <li *ngFor="let comment of incident.comments">
+            {{ comment }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <span>Page {{ currentPage }} of {{ totalPages() }}</span>
+
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages()">
+        Next
+      </button>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="right-half">
+    <h2 class="section-title">Report an Incident</h2>
+
+    <div class="form-container">
+      <form [formGroup]="incidentForm" (ngSubmit)="submitForm()">
+        <label>Title</label>
+        <input type="text" formControlName="title" />
+
+        <label>Description</label>
+        <textarea rows="4" formControlName="description"></textarea>
+
+        <label>Status</label>
+        <select formControlName="status">
+          <option value="">Select status</option>
+          <option *ngFor="let s of statuses" [value]="s">
+            {{ s }}
+          </option>
+        </select>
+
+        <label>Created By</label>
+        <input type="text" formControlName="created_by" />
+
+        <button type="submit" class="submit-btn">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>

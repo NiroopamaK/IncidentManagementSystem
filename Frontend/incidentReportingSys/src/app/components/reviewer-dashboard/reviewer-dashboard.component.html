@@ -1,0 +1,137 @@
+<app-top-navbar></app-top-navbar>
+<div class="container">
+  <!-- LEFT: Reported Incidents -->
+  <div class="left-half">
+    <h2 class="section-title">Reported Incidents</h2>
+
+    <div
+      *ngFor="let incident of paginatedIncidents; let i = index"
+      class="incident-box"
+    >
+      <div class="incident-row">
+        <h3 class="incident-title">{{ incident.title }}</h3>
+        <div class="incident-actions">
+          <span class="status">{{ incident.status }}</span>
+          <button
+            class="view-details-btn"
+            [ngClass]="{
+              expanded: expandedIncidents[(currentPage - 1) * itemsPerPage + i],
+            }"
+            (click)="toggleDetails(i)"
+          >
+            ⌄
+          </button>
+        </div>
+      </div>
+
+      <!-- Collapsible Details -->
+      <div
+        *ngIf="expandedIncidents[(currentPage - 1) * itemsPerPage + i]"
+        class="incident-details"
+      >
+        <p><strong>Description:</strong> {{ incident.description }}</p>
+        <p><strong>Created By:</strong> {{ incident.created_by.username }}</p>
+
+        <ul class="comments-list">
+          <li *ngFor="let comment of commentsMap[incident.id]">
+            <strong>{{ comment.user.username }}:</strong> {{ comment.message }}
+          </li>
+        </ul>
+
+        <!-- Add Comment Form -->
+        <form
+          [formGroup]="commentForms[incident.id]"
+          (ngSubmit)="addComment(incident.id)"
+          class="add-comment"
+        >
+          <input
+            type="text"
+            formControlName="message"
+            placeholder="Add a comment..."
+          />
+          <button type="submit" [disabled]="commentForms[incident.id].invalid">
+            Comment
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages() }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages()">
+        Next
+      </button>
+    </div>
+  </div>
+
+  <!-- RIGHT: Report Incident Form -->
+  <div class="right-half">
+    <h2 class="section-title">Report an Incident</h2>
+    <div class="form-container">
+      <form [formGroup]="incidentForm" (ngSubmit)="submitIncident()">
+        <label>Title</label>
+        <input type="text" formControlName="title" />
+        <div
+          class="error"
+          *ngIf="
+            incidentForm.controls['title'].invalid &&
+            incidentForm.controls['title'].touched
+          "
+        >
+          Title is required
+        </div>
+
+        <label>Description</label>
+        <textarea rows="4" formControlName="description"></textarea>
+        <div
+          class="error"
+          *ngIf="
+            incidentForm.controls['description'].invalid &&
+            incidentForm.controls['description'].touched
+          "
+        >
+          Description is required
+        </div>
+
+        <label>Status</label>
+        <select formControlName="status">
+          <option value="" disabled>Select status</option>
+          <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+        </select>
+        <div
+          class="error"
+          *ngIf="
+            incidentForm.controls['status'].invalid &&
+            incidentForm.controls['status'].touched
+          "
+        >
+          Status is required
+        </div>
+
+        <label>Created By</label>
+        <input type="text" formControlName="created_by" />
+        <div
+          class="error"
+          *ngIf="
+            incidentForm.controls['created_by'].invalid &&
+            incidentForm.controls['created_by'].touched
+          "
+        >
+          Creator name is required
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="incidentForm.invalid"
+          class="submit-btn"
+        >
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

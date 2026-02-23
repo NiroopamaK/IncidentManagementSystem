@@ -1,0 +1,84 @@
+<app-top-navbar></app-top-navbar>
+
+<div class="container">
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-box">
+      <h3>Total Issues</h3>
+      <p>{{ totalIssues }}</p>
+    </div>
+    <div class="stat-box">
+      <h3>Total Reporters</h3>
+      <p>{{ totalReporters }}</p>
+    </div>
+    <div class="stat-box">
+      <h3>Total Reviewers</h3>
+      <p>{{ totalReviewers }}</p>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter">
+    <label>Status Filter:</label>
+    <form [formGroup]="statusFilterForm">
+      <select formControlName="status">
+        <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+      </select>
+    </form>
+  </div>
+
+  <!-- Incidents Table -->
+  <table class="incident-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Created By</th>
+        <th>Assigned To</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let incident of paginatedIncidents">
+        <tr>
+          <td>{{ incident.title }}</td>
+          <td>
+            <span
+              class="status-badge"
+              [ngClass]="{
+                'status-open': incident.status === 'Open',
+                'status-in-progress': incident.status === 'In Progress',
+                'status-resolved': incident.status === 'Resolved',
+                'status-closed': incident.status === 'Closed',
+              }"
+              >{{ incident.status }}</span
+            >
+          </td>
+          <td>{{ getUsername(incident.created_by) }}</td>
+          <td>{{ getUsername(incident.assigned_to) }}</td>
+          <td>
+            <button (click)="toggleDetails(incident.id)">
+              {{ expandedIncidents[incident.id] ? "Hide" : "Show" }}
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="expandedIncidents[incident.id]">
+          <td colspan="5" class="expanded-description">
+            <strong>Description:</strong> {{ incident.description }}
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">
+      &laquo; Prev
+    </button>
+    <span>Page {{ currentPage }} of {{ totalPages() }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages()">
+      Next &raquo;
+    </button>
+  </div>
+</div>

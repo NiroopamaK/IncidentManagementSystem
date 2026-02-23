@@ -1,0 +1,227 @@
+/* ============================= */
+/* Reset */
+/* ============================= */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* ============================= */
+/* Layout */
+/* ============================= */
+
+.container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: url('../../../assets/incident.jpg') no-repeat center center;
+  background-size: cover;
+  position: relative;
+}
+
+/* Light overlay */
+.container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(204, 230, 255, 0.85);
+  z-index: 0;
+}
+
+.left-half,
+.right-half {
+  position: relative;
+  z-index: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.left-half {
+  flex: 3;
+}
+
+.right-half {
+  flex: 2;
+}
+
+/* Section titles */
+.section-title {
+  margin: 0 0 20px 0;
+  color: #1e3a5a;
+}
+
+/* ============================= */
+/* Incident Card */
+/* ============================= */
+
+.incident-box {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+/* Main row */
+.incident-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Title */
+.incident-title {
+  margin: 0;
+  font-size: 18px;
+  color: #1e3a5a;
+}
+
+/* Right-side action group */
+.incident-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px; /* fixed space between items */
+}
+
+/* Status badge */
+.status {
+  font-weight: 600;
+  color: #2a5e8b;
+  background-color: #e6f2ff;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+/* Delete button */
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.2s ease;
+}
+
+.delete-btn:hover {
+  transform: scale(1.1);
+}
+
+/* View Details Button (UNCHANGED STYLE) */
+.view-details-btn {
+  background-color: #e6f2ff;
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.view-details-btn:hover {
+  background-color: #cce6ff;
+  transform: translateY(-2px);
+}
+
+.view-details-btn .arrow {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.view-details-btn.expanded .arrow {
+  transform: rotate(180deg);
+}
+
+/* Details section */
+.incident-details {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+.incident-details ul {
+  padding-left: 20px;
+}
+/* ============================= */
+/* Pagination */
+/* ============================= */
+
+.pagination {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #2a5e8b;
+  background: white;
+  cursor: pointer;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #2a5e8b;
+  color: white;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================= */
+/* Form Section */
+/* ============================= */
+
+.form-container {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.15);
+  max-width: 420px;
+}
+
+form label {
+  font-weight: 600;
+  margin-top: 10px;
+  display: block;
+}
+
+form input,
+form textarea,
+form select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+form input:focus,
+form textarea:focus,
+form select:focus {
+  border-color: #2a5e8b;
+  outline: none;
+  box-shadow: 0 0 4px rgba(42, 94, 139, 0.4);
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #2a5e8b;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #1f4770;
+}
