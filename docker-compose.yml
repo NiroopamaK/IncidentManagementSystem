@@ -31,7 +31,7 @@ services:
     container_name: IMS-FrontendApp
     #restart: always
     ports:
-      - "80:80"
+      - "4200:80"
     depends_on:
       - backend
 

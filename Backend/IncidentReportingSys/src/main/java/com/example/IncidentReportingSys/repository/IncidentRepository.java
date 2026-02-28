@@ -7,12 +7,12 @@ import java.util.List;
 
 public interface IncidentRepository extends JpaRepository<Incident, Integer> {
 
-    // Optional: find incidents by status
+    // Find incidents by status
     List<Incident> findByStatus(Status status);
 
-    // Optional: find incidents assigned to a specific user
+    // Find incidents assigned to a specific user (by userId)
     List<Incident> findByAssignedTo(int userId);
 
-    // Optional: find incidents created by a specific user
+    // Find incidents created by a specific user (by userId)
     List<Incident> findByCreatedBy(int userId);
 }

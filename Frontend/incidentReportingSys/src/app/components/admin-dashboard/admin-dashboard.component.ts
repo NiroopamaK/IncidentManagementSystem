@@ -1,8 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  Inject,
+  PLATFORM_ID,
+} from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TopNavbarComponent } from '../top-navbar/top-navbar.component';
+import { AuthService } from '../../services/auth.service';
+import { IncidentService } from '../../services/incident.service';
+import { CommentService } from '../../services/comment.service';
 import { User } from '../../Models/user.model';
+import { status } from '../../Models/status.model';
 import { Incident } from '../../Models/incident.model';
 
 @Component({
@@ -14,138 +24,179 @@ import { Incident } from '../../Models/incident.model';
 })
 export class AdminDashboardComponent implements OnInit {
   users: User[] = [];
-  incidents: Incident[] = [];
+  filteredUsers: User[] = [];
+  incidents: (Incident & {
+    createdUserName: string;
+    assignedUserName: string;
+    comments: string[];
+  })[] = [];
+  filteredIncidents: typeof this.incidents = [];
 
-  filteredIncidents: Incident[] = [];
+  // Toggle view
+  showUsers = false;
+
+  // Filters
   statusFilterForm!: FormGroup;
-
-  statuses: string[] = ['All', 'Open', 'In Progress', 'Resolved', 'Closed'];
-  expandedIncidents: { [id: number]: boolean } = {};
+  roleFilterForm!: FormGroup;
 
   // Pagination
   currentPage = 1;
   itemsPerPage = 5;
 
-  constructor(private fb: FormBuilder) {}
+  // Expanded incidents
+  expandedIncidents: { [id: number]: boolean } = {};
+
+  statuses = ['All', status.open, status.in_progress, status.resolved];
+  roles: ('All' | 'REPORTER' | 'REVIEWER' | 'ADMIN')[] = [
+    'All',
+    'REPORTER',
+    'REVIEWER',
+    'ADMIN',
+  ];
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private incidentService: IncidentService,
+    private commentService: CommentService,
+    private cd: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {}
 
   ngOnInit(): void {
-    this.loadData();
-
+    // Initialize forms
     this.statusFilterForm = this.fb.group({ status: ['All'] });
-    this.applyFilter('All');
+    this.roleFilterForm = this.fb.group({ role: ['All'] });
 
-    this.statusFilterForm.get('status')?.valueChanges.subscribe((value) => {
-      this.applyFilter(value);
-      this.currentPage = 1;
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadUsers();
+      this.loadIncidents();
+
+      // Filters
+      this.statusFilterForm.get('status')?.valueChanges.subscribe((value) => {
+        this.applyIncidentFilter(value);
+        this.currentPage = 1;
+      });
+
+      this.roleFilterForm.get('role')?.valueChanges.subscribe((value) => {
+        this.applyUserFilter(value);
+        this.currentPage = 1;
+      });
+    }
+  }
+
+  // ================= VIEW TOGGLES =================
+  showUserView() {
+    this.showUsers = true;
+    this.currentPage = 1;
+  }
+
+  showIncidentView() {
+    this.showUsers = false;
+    this.currentPage = 1;
+  }
+
+  // ================= USERS =================
+  loadUsers() {
+    this.authService.getAllUsers().subscribe({
+      next: (data) => {
+        this.users = data;
+        this.filteredUsers = [...this.users];
+        // After users load, update incident usernames
+        this.updateIncidentUsernames();
+      },
+      error: (err) => console.error('Error loading users', err),
     });
   }
 
-  loadData() {
-    // Hardcoded users
-    this.users = [
-      { id: 1, username: 'John', role: 'reporter' },
-      { id: 2, username: 'Alice', role: 'reviewer' },
-      { id: 3, username: 'Bob', role: 'reporter' },
-      { id: 4, username: 'Carol', role: 'reviewer' },
-      { id: 5, username: 'Dave', role: 'reporter' },
-    ];
-
-    // Hardcoded incidents using IDs
-    this.incidents = [
-      {
-        id: 1,
-        title: 'Server down',
-        description: 'Server not responding',
-        status: 'Open',
-        created_by: 1,
-        assigned_to: 2,
-      },
-      {
-        id: 2,
-        title: 'Login issue',
-        description: 'Login fails',
-        status: 'Resolved',
-        created_by: 3,
-        assigned_to: 4,
-      },
-      {
-        id: 3,
-        title: 'UI Bug',
-        description: 'Graphs not loading',
-        status: 'In Progress',
-        created_by: 5,
-        assigned_to: 2,
-      },
-      {
-        id: 4,
-        title: 'API Timeout',
-        description: 'API timeouts frequently',
-        status: 'Closed',
-        created_by: 1,
-        assigned_to: 4,
-      },
-      {
-        id: 5,
-        title: 'Email Issue',
-        description: 'Emails not sending',
-        status: 'Open',
-        created_by: 3,
-        assigned_to: 2,
-      },
-      {
-        id: 6,
-        title: 'Database lag',
-        description: 'Queries are slow',
-        status: 'In Progress',
-        created_by: 5,
-      },
-      {
-        id: 7,
-        title: 'Dashboard crash',
-        description: 'Dashboard fails to load',
-        status: 'Open',
-        created_by: 1,
-      },
-    ];
+  applyUserFilter(role: string) {
+    this.filteredUsers =
+      role === 'All'
+        ? [...this.users]
+        : this.users.filter((u) => u.role === role);
   }
 
-  getUsername(userId?: number) {
-    return this.users.find((u) => u.id === userId)?.username || 'N/A';
+  get paginatedUsers(): User[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredUsers.slice(start, start + this.itemsPerPage);
   }
 
-  get totalIssues(): number {
-    return this.incidents.length;
-  }
-  get totalReporters(): number {
-    return this.users.filter((u) => u.role === 'reporter').length;
-  }
-  get totalReviewers(): number {
-    return this.users.filter((u) => u.role === 'reviewer').length;
+  // ================= INCIDENTS =================
+  loadIncidents() {
+    this.incidentService.getAllIncidents().subscribe({
+      next: (data) => {
+        this.incidents = data.map((incident) => ({
+          ...incident,
+          comments: [],
+          createdUserName: '', // will fill after users load
+          assignedUserName: '',
+        }));
+        this.filteredIncidents = [...this.incidents];
+        this.loadComments();
+        this.updateIncidentUsernames(); // try to set names immediately if users exist
+      },
+      error: (err) => console.error('Error loading incidents', err),
+    });
   }
 
-  applyFilter(status: string) {
+  applyIncidentFilter(status: string) {
     this.filteredIncidents =
       status === 'All'
         ? [...this.incidents]
         : this.incidents.filter((i) => i.status === status);
   }
 
+  get paginatedIncidents() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredIncidents.slice(start, start + this.itemsPerPage);
+  }
+
+  // ================= COMMENTS =================
+  loadComments() {
+    this.incidents.forEach((incident) => {
+      if (!incident.id) return;
+      this.commentService.getCommentsByIncident(incident.id).subscribe({
+        next: (comments) => {
+          incident.comments = comments.map((c) => c.message);
+          this.cd.detectChanges();
+        },
+        error: (err) =>
+          console.error(
+            'Error loading comments for incident',
+            incident.id,
+            err,
+          ),
+      });
+    });
+  }
+
+  // ================= UPDATE USERNAMES =================
+  updateIncidentUsernames() {
+    this.incidents.forEach((incident) => {
+      incident.createdUserName =
+        this.users.find((u) => u.id === incident.createdBy)?.username ||
+        'Loading...';
+      incident.assignedUserName =
+        this.users.find((u) => u.id === incident.assignedTo)?.username ||
+        'Loading...';
+    });
+  }
+
+  // ================= INCIDENT DETAILS =================
   toggleDetails(incidentId: number) {
     this.expandedIncidents[incidentId] = !this.expandedIncidents[incidentId];
   }
 
+  // ================= PAGINATION =================
   totalPages(): number {
-    return Math.ceil(this.filteredIncidents.length / this.itemsPerPage);
-  }
-
-  get paginatedIncidents(): Incident[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.filteredIncidents.slice(start, start + this.itemsPerPage);
+    const items = this.showUsers ? this.filteredUsers : this.filteredIncidents;
+    return Math.ceil(items.length / this.itemsPerPage);
   }
 
   prevPage() {
     if (this.currentPage > 1) this.currentPage--;
   }
+
   nextPage() {
     if (this.currentPage < this.totalPages()) this.currentPage++;
   }

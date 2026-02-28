@@ -1,117 +1,280 @@
-/* Container and blue overlay */
-.container {
-  position: relative;
-  padding: 2rem;
+/* ============================= */
+/* Reset & Base */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* ============================= */
+/* Dashboard Container */
+.dashboard-container {
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #222;
-  overflow: hidden;
-}
-
-.container::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: url('../../../assets/incident.jpg') center/cover no-repeat;
-  filter: blur(4px);
-  z-index: 0;
-}
-
-.container::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0, 80, 160, 0.4); /* blue overlay */
-  z-index: 0;
-}
-
-.container > * {
-  position: relative; /* ensures text stays above pseudo-elements */
-  z-index: 1;
-}
-
-.container-overlay {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0, 80, 160, 0.4); /* blue tint */
-  backdrop-filter: blur(4px);
-  z-index: 0;
-}
-
-/* Stats */
-.stats {
+  width: 100%;
+  background: url('../../../assets/incident.jpg') no-repeat center center;
+  background-size: cover;
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+}
+
+/* Light overlay for readability */
+.dashboard-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(204, 230, 255, 0.85);
+  z-index: 0;
+}
+
+/* Main content wrapper */
+.content-wrapper {
   position: relative;
   z-index: 1;
+  width: 100%;
+  max-width: 1000px;
 }
 
-.stat-box {
-  background-color: #ffffffcc;
-  padding: 1rem 1.5rem;
-  flex: 1 1 200px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  text-align: center;
-  transition: transform 0.2s;
-}
-.stat-box:hover { transform: translateY(-4px); }
-.stat-box h3 { font-size: 1rem; margin-bottom: 0.3rem; color: #555; }
-.stat-box p { font-size: 1.5rem; font-weight: bold; margin: 0; }
-
-/* Filter */
-.filter { margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; position: relative; z-index: 1; }
-.filter label { font-weight: 600; color: #fff; }
-.filter select { padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #ccc; outline: none; }
-
-/* Table */
-.incident-table { width: 100%; border-collapse: collapse; background-color: #ffffffcc; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: relative; z-index: 1; }
-.incident-table th, .incident-table td { padding: 0.75rem 1rem; text-align: left; }
-.incident-table thead { background-color: #007bff; color: #fff; }
-.incident-table tbody tr:nth-child(even) { background-color: #f0f8ff; }
-.incident-table tbody tr:hover { background-color: #d9ebff; }
-.incident-table button { padding: 0.25rem 0.6rem; border: none; border-radius: 5px; background-color: #007bff; color: #fff; cursor: pointer; font-size: 0.85rem; }
-.incident-table button:hover { background-color: #0056b3; }
-
-/* Expanded description row */
-.expanded-description { background-color: #e6f0ff; font-style: italic; }
-
-/* Status badges */
-.status-badge { padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; color: #fff; }
-.status-open { background-color: #4a90e2; }
-.status-in-progress { background-color: #5dade2; }
-.status-resolved { background-color: #3498db; }
-.status-closed { background-color: #2c3e50; }
-
-/* Pagination */
-.pagination {
-  margin-top: 1rem;
+/* ============================= */
+/* Top Cards */
+.top-squares {
   display: flex;
   justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.square {
+  width: 240px;
+  height: 150px;
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  color: white;
   position: relative;
   z-index: 1;
 }
-.pagination button {
-  padding: 0.4rem 0.8rem;
-  border-radius: 5px;
-  border: none;
-  background-color: #007bff;
-  color: #fff;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-.pagination button:disabled { background-color: #ccc; cursor: not-allowed; }
-.pagination span { font-weight: 600; color: #fff; }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .stats { flex-direction: column; }
-  .incident-table th, .incident-table td { padding: 0.5rem; }
+.square:hover {
+  transform: translateY(-5px);
+}
+
+/* Active / selected card - lighter blue highlight */
+.square.active {
+  background: linear-gradient(135deg, #60a5fa, #93c5fd);
+  outline: 3px solid #2563eb;
+}
+
+/* Text */
+.square h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.square p {
+  margin-top: 8px;
+  font-size: 36px;
+  font-weight: bold;
+}
+
+/* ============================= */
+/* Modern Filter Card */
+.filter-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+
+.filter-card label {
+  font-weight: 600;
+  color: #1e3a5a;
+  margin-bottom: 0;
+}
+
+.filter-card select {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #93c5fd;
+  background: white;
+  color: #1e3a5a;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-card select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 4px rgba(37, 99, 235, 0.3);
+}
+
+.filter-card select:hover {
+  border-color: #3b82f6;
+}
+
+/* ============================= */
+/* Content Card / Table */
+.content-card {
+  position: relative;
+  z-index: 1;
+  background: white;
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead {
+  background: #3b82f6;
+  color: white;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background: #f1f5f9;
+}
+
+tbody tr:hover {
+  background: #e0f2fe;
+}
+
+/* ============================= */
+/* Status Badges */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.status-open {
+  background: #60a5fa;
+}
+
+.status-in-progress {
+  background: #3b82f6;
+}
+
+.status-resolved {
+  background: #1d4ed8;
+}
+
+.status-closed {
+  background: #1e3a8a;
+}
+
+/* ============================= */
+/* Expanded Details */
+.expanded-details {
+  background: #f0f9ff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.expanded-details ul {
+  padding-left: 0;
+  list-style: none;
+  margin: 10px 0;
+}
+
+.expanded-details li {
+  background: #e6f2ff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+/* ============================= */
+/* Buttons */
+button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================= */
+/* Pagination */
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.9);
+  padding: 10px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  color: #1e3a5a;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #2a5e8b;
+  background: white;
+  cursor: pointer;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #2a5e8b;
+  color: white;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================= */
+/* No incidents text */
+.no-incidents-text {
+  font-style: italic;
+  color: gray;
+  text-align: center;
+  margin: 20px 0;
 }

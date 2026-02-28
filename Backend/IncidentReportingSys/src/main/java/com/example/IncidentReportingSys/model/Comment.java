@@ -7,29 +7,23 @@ import jakarta.persistence.*;
 public class Comment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // serial / auto-increment
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "incidentId")
-    private int incidentId;
-
-    @Column(name = "userId")
-    private int userId;
-
+    private int incidentId; // store incident id
+    private int userId; // store user id
     private String message;
 
     public Comment() {
-        // default constructor for JPA
     }
 
-    public Comment(int id, int incidentId, int userId, String message) {
-        this.id = id;
+    public Comment(int incidentId, int userId, String message) {
         this.incidentId = incidentId;
         this.userId = userId;
         this.message = message;
     }
 
-    // Getters and Setters
+    // Getters & Setters
     public int getId() {
         return id;
     }

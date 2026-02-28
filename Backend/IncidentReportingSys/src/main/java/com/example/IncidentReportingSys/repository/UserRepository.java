@@ -7,9 +7,11 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-    // Optional: find users by role
+    // Find users by role (enum)
     List<User> findByRole(UserType role);
 
-    // Optional: find user by name
-    User findByName(String name);
+    // Find user by username
+    User findByUsername(String username);
+
+    User findByEmail(String email);
 }

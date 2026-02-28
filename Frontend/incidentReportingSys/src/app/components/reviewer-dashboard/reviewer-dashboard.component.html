@@ -1,137 +1,102 @@
 <app-top-navbar></app-top-navbar>
 <div class="container">
-  <!-- LEFT: Reported Incidents -->
-  <div class="left-half">
-    <h2 class="section-title">Reported Incidents</h2>
+  <div class="content-wrapper">
+    <h2 class="section-title">My Assigned Incidents</h2>
 
-    <div
-      *ngFor="let incident of paginatedIncidents; let i = index"
-      class="incident-box"
-    >
-      <div class="incident-row">
-        <h3 class="incident-title">{{ incident.title }}</h3>
-        <div class="incident-actions">
-          <span class="status">{{ incident.status }}</span>
-          <button
-            class="view-details-btn"
-            [ngClass]="{
-              expanded: expandedIncidents[(currentPage - 1) * itemsPerPage + i],
-            }"
-            (click)="toggleDetails(i)"
-          >
-            ⌄
-          </button>
-        </div>
-      </div>
-
-      <!-- Collapsible Details -->
-      <div
-        *ngIf="expandedIncidents[(currentPage - 1) * itemsPerPage + i]"
-        class="incident-details"
+    <!-- FILTER -->
+    <div class="filter-section" *ngIf="incidents.length > 0">
+      <label>Filter by Status:</label>
+      <select
+        [(ngModel)]="selectedStatus"
+        (ngModelChange)="onFilterChange()"
+        class="status-filter"
       >
-        <p><strong>Description:</strong> {{ incident.description }}</p>
-        <p><strong>Created By:</strong> {{ incident.created_by.username }}</p>
+        <option *ngFor="let s of filterStatuses" [value]="s">{{ s }}</option>
+      </select>
+    </div>
 
-        <ul class="comments-list">
-          <li *ngFor="let comment of commentsMap[incident.id]">
-            <strong>{{ comment.user.username }}:</strong> {{ comment.message }}
-          </li>
-        </ul>
+    <!-- INCIDENT CARDS -->
+    <div *ngIf="paginatedIncidents.length > 0; else noIncidents">
+      <div
+        *ngFor="let incident of paginatedIncidents; let i = index"
+        class="incident-box"
+      >
+        <div class="incident-row">
+          <h3 class="incident-title">{{ incident.title }}</h3>
 
-        <!-- Add Comment Form -->
-        <form
-          [formGroup]="commentForms[incident.id]"
-          (ngSubmit)="addComment(incident.id)"
-          class="add-comment"
-        >
-          <input
-            type="text"
-            formControlName="message"
-            placeholder="Add a comment..."
-          />
-          <button type="submit" [disabled]="commentForms[incident.id].invalid">
-            Comment
-          </button>
-        </form>
+          <div class="incident-actions">
+            <!-- Editable Status -->
+            <select
+              #statusSelect
+              class="status"
+              [value]="incident.status"
+              (change)="updateStatus(incident, statusSelect.value)"
+            >
+              <option *ngFor="let s of incidentStatuses" [value]="s">
+                {{ s }}
+              </option>
+            </select>
+
+            <!-- Expand button -->
+            <button
+              class="view-details-btn"
+              [ngClass]="{ expanded: expandedIncidents[i] }"
+              (click)="toggleDetails(i)"
+            >
+              <span class="arrow">⌄</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- DETAILS -->
+        <div *ngIf="expandedIncidents[i]" class="incident-details">
+          <p><strong>Created By:</strong> {{ incident.createdByName }}</p>
+          <p><strong>Description:</strong> {{ incident.description }}</p>
+
+          <!-- COMMENTS -->
+          <ul *ngIf="incident.comments.length">
+            <li *ngFor="let comment of incident.comments">{{ comment }}</li>
+          </ul>
+          <p *ngIf="!incident.comments.length">No comments yet.</p>
+
+          <!-- ADD COMMENT -->
+          <form
+            [formGroup]="incident.commentForm"
+            (ngSubmit)="addComment(incident)"
+          >
+            <input
+              type="text"
+              formControlName="message"
+              placeholder="Add a comment..."
+            />
+            <button
+              type="submit"
+              class="submit-btn"
+              [disabled]="incident.commentForm.invalid"
+            >
+              Add Comment
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- PAGINATION -->
+      <div class="pagination" *ngIf="filteredIncidents.length > 0">
+        <button (click)="prevPage()" [disabled]="currentPage === 1">
+          Previous
+        </button>
+        <span>Page {{ currentPage }} of {{ totalPages() }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages()">
+          Next
+        </button>
       </div>
     </div>
 
-    <!-- Pagination -->
-    <div class="pagination">
-      <button (click)="prevPage()" [disabled]="currentPage === 1">
-        Previous
-      </button>
-      <span>Page {{ currentPage }} of {{ totalPages() }}</span>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages()">
-        Next
-      </button>
-    </div>
-  </div>
-
-  <!-- RIGHT: Report Incident Form -->
-  <div class="right-half">
-    <h2 class="section-title">Report an Incident</h2>
-    <div class="form-container">
-      <form [formGroup]="incidentForm" (ngSubmit)="submitIncident()">
-        <label>Title</label>
-        <input type="text" formControlName="title" />
-        <div
-          class="error"
-          *ngIf="
-            incidentForm.controls['title'].invalid &&
-            incidentForm.controls['title'].touched
-          "
-        >
-          Title is required
-        </div>
-
-        <label>Description</label>
-        <textarea rows="4" formControlName="description"></textarea>
-        <div
-          class="error"
-          *ngIf="
-            incidentForm.controls['description'].invalid &&
-            incidentForm.controls['description'].touched
-          "
-        >
-          Description is required
-        </div>
-
-        <label>Status</label>
-        <select formControlName="status">
-          <option value="" disabled>Select status</option>
-          <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
-        </select>
-        <div
-          class="error"
-          *ngIf="
-            incidentForm.controls['status'].invalid &&
-            incidentForm.controls['status'].touched
-          "
-        >
-          Status is required
-        </div>
-
-        <label>Created By</label>
-        <input type="text" formControlName="created_by" />
-        <div
-          class="error"
-          *ngIf="
-            incidentForm.controls['created_by'].invalid &&
-            incidentForm.controls['created_by'].touched
-          "
-        >
-          Creator name is required
-        </div>
-
-        <button
-          type="submit"
-          [disabled]="incidentForm.invalid"
-          class="submit-btn"
-        >
-          Submit
-        </button>
-      </form>
-    </div>
+    <!-- NO INCIDENTS TEMPLATE -->
+    <ng-template #noIncidents>
+      <p class="no-incidents-text">
+        No incidents have been assigned to you yet.
+      </p>
+    </ng-template>
   </div>
 </div>

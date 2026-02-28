@@ -9,19 +9,27 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String name;
-    private String password;
-    @Enumerated(EnumType.STRING)
-    private UserType role;
 
-    public User(int id, String name, String password, UserType role) {
-        this.id = id;
-        this.name = name;
+    private String username;
+
+    @Column(unique = true)
+    private String email;
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private UserType role; // stores ADMIN, REVIEWER, REPORTER
+
+    public User() {
+    }
+
+    public User(String username, String email, String password, UserType role) {
+        this.username = username;
+        this.email = email;
         this.password = password;
         this.role = role;
     }
 
-    // Getter and Setter for id
+    // Getters & Setters
     public int getId() {
         return id;
     }
@@ -30,16 +38,22 @@ public class User {
         this.id = id;
     }
 
-    // Getter and Setter for name
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    // Getter and Setter for password
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -48,7 +62,6 @@ public class User {
         this.password = password;
     }
 
-    // Getter and Setter for role
     public UserType getRole() {
         return role;
     }

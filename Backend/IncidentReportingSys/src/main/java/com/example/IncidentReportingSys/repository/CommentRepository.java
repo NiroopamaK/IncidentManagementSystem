@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-    // Optional: find all comments for a specific incident
+    // Find all comments for a specific incident
     List<Comment> findByIncidentId(int incidentId);
 
-    // Optional: find all comments made by a specific user
+    // Find all comments made by a specific user
     List<Comment> findByUserId(int userId);
 }

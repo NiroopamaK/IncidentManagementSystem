@@ -1,5 +1,7 @@
 export interface User {
-  id: number;
+  id?: number;
   username: string;
-  role: 'reporter' | 'reviewer' | 'admin';
+  email: string;
+  password?: string;
+  role: 'REPORTER' | 'REVIEWER' | 'ADMIN';
 }

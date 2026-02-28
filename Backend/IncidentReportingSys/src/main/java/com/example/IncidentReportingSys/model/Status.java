@@ -2,6 +2,6 @@ package com.example.IncidentReportingSys.model;
 
 public enum Status {
     OPEN,
-    RESEOLVED,
+    RESOLVED,
     IN_PROGRESS
 }

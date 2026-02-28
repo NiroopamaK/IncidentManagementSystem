@@ -7,28 +7,22 @@ import jakarta.persistence.*;
 public class Incident {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // serial / auto-increment
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String title;
-
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private Status status; // e.g., OPEN, IN_PROGRESS, CLOSED
+    private Status status;
 
-    @Column(name = "createdBy")
-    private int createdBy; // user ID of creator
-
-    @Column(name = "assignedTo")
-    private int assignedTo; // user ID of assignee
+    private int createdBy; // store user id
+    private int assignedTo; // store user id
 
     public Incident() {
-        // default constructor for JPA
     }
 
-    public Incident(int id, String title, String description, Status status, int createdBy, int assignedTo) {
-        this.id = id;
+    public Incident(String title, String description, Status status, int createdBy, int assignedTo) {
         this.title = title;
         this.description = description;
         this.status = status;
@@ -36,7 +30,7 @@ public class Incident {
         this.assignedTo = assignedTo;
     }
 
-    // Getters and Setters
+    // Getters & Setters
     public int getId() {
         return id;
     }

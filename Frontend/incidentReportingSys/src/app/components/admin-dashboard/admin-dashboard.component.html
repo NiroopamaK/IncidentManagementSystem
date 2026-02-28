@@ -1,84 +1,151 @@
 <app-top-navbar></app-top-navbar>
 
-<div class="container">
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat-box">
-      <h3>Total Issues</h3>
-      <p>{{ totalIssues }}</p>
-    </div>
-    <div class="stat-box">
-      <h3>Total Reporters</h3>
-      <p>{{ totalReporters }}</p>
-    </div>
-    <div class="stat-box">
-      <h3>Total Reviewers</h3>
-      <p>{{ totalReviewers }}</p>
-    </div>
-  </div>
+<div class="dashboard-container">
+  <div class="content-wrapper">
+    <!-- ===== TOP CARDS ===== -->
+    <div class="top-squares">
+      <div
+        class="square"
+        [class.active]="!showUsers"
+        (click)="showIncidentView()"
+      >
+        <h3>Incidents</h3>
+        <p>{{ incidents.length }}</p>
+      </div>
 
-  <!-- Filter -->
-  <div class="filter">
-    <label>Status Filter:</label>
-    <form [formGroup]="statusFilterForm">
-      <select formControlName="status">
-        <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
-      </select>
-    </form>
-  </div>
+      <div class="square" [class.active]="showUsers" (click)="showUserView()">
+        <h3>Users</h3>
+        <p>{{ users.length }}</p>
+      </div>
+    </div>
 
-  <!-- Incidents Table -->
-  <table class="incident-table">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Status</th>
-        <th>Created By</th>
-        <th>Assigned To</th>
-        <th>Details</th>
-      </tr>
-    </thead>
-    <tbody>
-      <ng-container *ngFor="let incident of paginatedIncidents">
-        <tr>
-          <td>{{ incident.title }}</td>
-          <td>
-            <span
-              class="status-badge"
-              [ngClass]="{
-                'status-open': incident.status === 'Open',
-                'status-in-progress': incident.status === 'In Progress',
-                'status-resolved': incident.status === 'Resolved',
-                'status-closed': incident.status === 'Closed',
-              }"
-              >{{ incident.status }}</span
-            >
-          </td>
-          <td>{{ getUsername(incident.created_by) }}</td>
-          <td>{{ getUsername(incident.assigned_to) }}</td>
-          <td>
-            <button (click)="toggleDetails(incident.id)">
-              {{ expandedIncidents[incident.id] ? "Hide" : "Show" }}
-            </button>
-          </td>
-        </tr>
-        <tr *ngIf="expandedIncidents[incident.id]">
-          <td colspan="5" class="expanded-description">
-            <strong>Description:</strong> {{ incident.description }}
-          </td>
-        </tr>
-      </ng-container>
-    </tbody>
-  </table>
+    <!-- ================= USERS VIEW ================= -->
+    <div *ngIf="showUsers" class="content-card">
+      <div class="filter-card" [formGroup]="roleFilterForm">
+        <label for="roleSelect">Filter by Role:</label>
+        <select id="roleSelect" formControlName="role">
+          <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+        </select>
+      </div>
 
-  <!-- Pagination -->
-  <div class="pagination">
-    <button (click)="prevPage()" [disabled]="currentPage === 1">
-      &laquo; Prev
-    </button>
-    <span>Page {{ currentPage }} of {{ totalPages() }}</span>
-    <button (click)="nextPage()" [disabled]="currentPage === totalPages()">
-      Next &raquo;
-    </button>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of paginatedUsers">
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.role }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= INCIDENTS VIEW ================= -->
+    <div *ngIf="!showUsers" class="content-card">
+      <div class="filter-card" [formGroup]="statusFilterForm">
+        <label for="statusSelect">Filter by Status:</label>
+        <select id="statusSelect" formControlName="status">
+          <option *ngFor="let s of statuses" [value]="s">
+            {{
+              s === "IN_PROGRESS"
+                ? "In Progress"
+                : s === "OPEN"
+                  ? "Open"
+                  : s === "RESOLVED"
+                    ? "Resolved"
+                    : s
+            }}
+          </option>
+        </select>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Created By</th>
+              <th>Assigned To</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <ng-container *ngFor="let incident of paginatedIncidents">
+              <tr>
+                <td>{{ incident.title }}</td>
+                <td>
+                  <span
+                    class="status-badge"
+                    [ngClass]="{
+                      'status-open': incident.status === 'OPEN',
+                      'status-in-progress': incident.status === 'IN_PROGRESS',
+                      'status-resolved': incident.status === 'RESOLVED',
+                    }"
+                  >
+                    {{ incident.status }}
+                  </span>
+                </td>
+                <td>{{ incident.createdUserName }}</td>
+                <td>{{ incident.assignedUserName }}</td>
+                <td>
+                  <button
+                    *ngIf="incident.id != null"
+                    (click)="toggleDetails(incident.id)"
+                  >
+                    {{ expandedIncidents[incident.id] ? "Hide" : "View" }}
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="incident.id != null && expandedIncidents[incident.id]">
+                <td colspan="5" class="expanded-details">
+                  <p>
+                    <strong>Description:</strong> {{ incident.description }}
+                  </p>
+
+                  <div class="comments">
+                    <strong>Comments:</strong>
+                    <ul>
+                      <li *ngFor="let c of incident.comments">
+                        {{ c }}
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= PAGINATION ================= -->
+    <div
+      *ngIf="
+        (showUsers && filteredUsers.length) ||
+        (!showUsers && filteredIncidents.length)
+      "
+      class="pagination"
+    >
+      <button (click)="prevPage()" [disabled]="currentPage === 1">
+        « Prev
+      </button>
+
+      <span> Page {{ currentPage }} of {{ totalPages() }} </span>
+
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages()">
+        Next »
+      </button>
+    </div>
   </div>
 </div>

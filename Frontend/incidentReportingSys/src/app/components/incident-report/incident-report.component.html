@@ -1,95 +1,198 @@
 <app-top-navbar></app-top-navbar>
+
 <div class="container">
-  <!-- LEFT SIDE -->
   <div class="left-half">
     <h2 class="section-title">My Reported Incidents</h2>
 
-    <div
-      *ngFor="let incident of paginatedIncidents; let i = index"
-      class="incident-box"
-    >
-      <div class="incident-row">
-        <!-- LEFT: Title -->
-        <h3 class="incident-title">
-          {{ incident.title }}
-        </h3>
+    <!-- STATUS FILTER -->
+    <div class="filter-container">
+      <label for="filter">Filter by Status:</label>
+      <select id="filter" [(ngModel)]="filteredStatus">
+        <option value="ALL">All</option>
+        <option value="OPEN">Open</option>
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="RESOLVED">Resolved</option>
+      </select>
+    </div>
 
-        <!-- RIGHT: Status + Delete + View -->
-        <div class="incident-actions">
-          <span class="status">
-            {{ incident.status }}
-          </span>
+    <!-- INCIDENT LIST -->
+    <ng-container *ngIf="paginatedIncidents.length > 0; else noIncidents">
+      <div
+        *ngFor="let incident of paginatedIncidents; let i = index"
+        class="incident-box"
+      >
+        <div class="incident-row">
+          <h3 class="incident-title">{{ incident.title || "Untitled" }}</h3>
 
-          <button
-            class="delete-btn"
-            (click)="deleteIncident((currentPage - 1) * itemsPerPage + i)"
+          <div class="incident-actions">
+            <!-- EDIT ACTIONS -->
+            <button
+              *ngIf="!incident.isEditing"
+              (click)="startEdit(incident, i)"
+              aria-label="Edit incident"
+            >
+              ✏️
+            </button>
+            <button
+              *ngIf="incident.isEditing"
+              (click)="saveEdit(incident)"
+              [disabled]="incident.editForm?.invalid"
+              aria-label="Save changes"
+            >
+              💾
+            </button>
+            <button
+              *ngIf="incident.isEditing"
+              (click)="cancelEdit(incident)"
+              aria-label="Cancel edit"
+            >
+              ❌
+            </button>
+
+            <span class="status">{{ incident.status }}</span>
+
+            <button
+              class="delete-btn"
+              (click)="deleteIncident(i)"
+              aria-label="Delete incident"
+            >
+              🗑️
+            </button>
+
+            <button
+              class="view-details-btn"
+              (click)="toggleDetails((currentPage - 1) * itemsPerPage + i)"
+              aria-label="Toggle details"
+            >
+              ⌄
+            </button>
+          </div>
+        </div>
+
+        <!-- COLLAPSIBLE DETAILS -->
+        <!-- COLLAPSIBLE DETAILS -->
+        <div
+          *ngIf="expandedIncidents[(currentPage - 1) * itemsPerPage + i]"
+          class="incident-details"
+        >
+          <!-- VIEW MODE -->
+          <div *ngIf="!incident.isEditing">
+            <p><strong>Description:</strong> {{ incident.description }}</p>
+          </div>
+
+          <!-- EDIT MODE (capture the FormGroup safely) -->
+          <ng-container *ngIf="incident.isEditing && incident.editForm as ef">
+            <div [formGroup]="ef" class="edit-block">
+              <label for="edit-title-{{ incident.id || i }}">Title</label>
+              <input
+                id="edit-title-{{ incident.id || i }}"
+                type="text"
+                formControlName="title"
+                maxlength="100"
+              />
+              <div
+                class="error"
+                *ngIf="ef.get('title')?.invalid && ef.get('title')?.touched"
+              >
+                Title is required and must be at most 100 characters.
+              </div>
+
+              <label for="edit-desc-{{ incident.id || i }}">Description</label>
+              <textarea
+                id="edit-desc-{{ incident.id || i }}"
+                rows="3"
+                formControlName="description"
+                maxlength="500"
+              ></textarea>
+              <div
+                class="error"
+                *ngIf="
+                  ef.get('description')?.invalid &&
+                  ef.get('description')?.touched
+                "
+              >
+                Description is required and must be at most 500 characters.
+              </div>
+            </div>
+
+            <!-- Save/Cancel buttons already in the row; optional: duplicate here if you want -->
+            <!--
+    <div class="edit-actions">
+      <button (click)="saveEdit(incident)" [disabled]="ef.invalid">💾</button>
+      <button (click)="cancelEdit(incident)">❌</button>
+    </div>
+    -->
+          </ng-container>
+
+          <p><strong>Assigned to:</strong> {{ incident.assignedUserName }}</p>
+
+          <!-- COMMENTS -->
+          <!-- COMMENTS -->
+          <div class="comments-section" *ngIf="incident.comments.length > 0">
+            <h4 class="comments-title">Comments</h4>
+
+            <div
+              class="comment-box"
+              *ngFor="let comment of incident.comments; let cIndex = index"
+            >
+              <p class="comment-text">{{ comment }}</p>
+            </div>
+          </div>
+
+          <div
+            *ngIf="!incident.comments || incident.comments.length === 0"
+            class="no-comments"
           >
-            🗑️
-          </button>
-
-          <button
-            class="view-details-btn"
-            [ngClass]="{
-              expanded: expandedIncidents[(currentPage - 1) * itemsPerPage + i],
-            }"
-            (click)="toggleDetails((currentPage - 1) * itemsPerPage + i)"
-          >
-            <span class="arrow">⌄</span>
-          </button>
+            <em>No comments yet.</em>
+          </div>
         </div>
       </div>
 
-      <!-- Collapsible Details -->
-      <div
-        *ngIf="expandedIncidents[(currentPage - 1) * itemsPerPage + i]"
-        class="incident-details"
-      >
-        <p><strong>Description:</strong> {{ incident.description }}</p>
-        <p><strong>Assigned to:</strong> {{ incident.assigned_to || "N/A" }}</p>
-        <ul>
-          <li *ngFor="let comment of incident.comments">
-            {{ comment }}
-          </li>
-        </ul>
+      <!-- PAGINATION -->
+      <div class="pagination">
+        <button (click)="prevPage()" [disabled]="currentPage === 1">
+          Previous
+        </button>
+        <span>Page {{ currentPage }} of {{ totalPages() }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages()">
+          Next
+        </button>
       </div>
-    </div>
+    </ng-container>
 
-    <!-- Pagination -->
-    <div class="pagination">
-      <button (click)="prevPage()" [disabled]="currentPage === 1">
-        Previous
-      </button>
-
-      <span>Page {{ currentPage }} of {{ totalPages() }}</span>
-
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages()">
-        Next
-      </button>
-    </div>
+    <ng-template #noIncidents>
+      <p>No incidents found.</p>
+    </ng-template>
   </div>
 
-  <!-- RIGHT SIDE -->
+  <!-- RIGHT SIDE FORM -->
   <div class="right-half">
     <h2 class="section-title">Report an Incident</h2>
-
     <div class="form-container">
       <form [formGroup]="incidentForm" (ngSubmit)="submitForm()">
-        <label>Title</label>
-        <input type="text" formControlName="title" />
+        <label for="title">Title</label>
+        <input id="title" type="text" formControlName="title" />
 
-        <label>Description</label>
-        <textarea rows="4" formControlName="description"></textarea>
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          rows="4"
+          formControlName="description"
+        ></textarea>
 
-        <label>Status</label>
-        <select formControlName="status">
+        <label for="status">Status</label>
+        <select id="status" formControlName="status">
           <option value="">Select status</option>
-          <option *ngFor="let s of statuses" [value]="s">
-            {{ s }}
-          </option>
+          <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
         </select>
 
-        <label>Created By</label>
-        <input type="text" formControlName="created_by" />
+        <label for="assigned_to">Assign To</label>
+        <select id="assigned_to" formControlName="assigned_to">
+          <option value="">Select Reviewer</option>
+          <option *ngFor="let user of users" [value]="user.id">
+            {{ user.username }}
+          </option>
+        </select>
 
         <button type="submit" class="submit-btn">Submit</button>
       </form>

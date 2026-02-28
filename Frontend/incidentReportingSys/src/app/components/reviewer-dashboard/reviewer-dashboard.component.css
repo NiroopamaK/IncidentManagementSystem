@@ -13,12 +13,14 @@ html, body {
 /* ============================= */
 
 .container {
-  display: flex;
   min-height: 100vh;
   width: 100%;
   background: url('../../../assets/incident.jpg') no-repeat center center;
   background-size: cover;
   position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
 }
 
 /* Light overlay */
@@ -30,27 +32,19 @@ html, body {
   z-index: 0;
 }
 
-.left-half,
-.right-half {
+/* Main content wrapper */
+.content-wrapper {
   position: relative;
   z-index: 1;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  max-width: 900px;
 }
 
-.left-half {
-  flex: 3;
-}
-
-.right-half {
-  flex: 2;
-}
-
-/* Section titles */
+/* Section title */
 .section-title {
-  margin: 0 0 20px 0;
+  margin-bottom: 30px;
   color: #1e3a5a;
+  text-align: center;
 }
 
 /* ============================= */
@@ -79,37 +73,26 @@ html, body {
   color: #1e3a5a;
 }
 
-/* Right-side action group */
+/* Right-side actions */
 .incident-actions {
   display: flex;
   align-items: center;
-  gap: 14px; /* fixed space between items */
+  gap: 14px;
 }
 
-/* Status badge */
+/* Status dropdown styled as badge */
 .status {
   font-weight: 600;
   color: #2a5e8b;
   background-color: #e6f2ff;
-  padding: 4px 12px;
+  padding: 6px 12px;
   border-radius: 12px;
-  font-size: 13px;
-}
-
-/* Delete button */
-.delete-btn {
-  background: none;
   border: none;
+  font-size: 13px;
   cursor: pointer;
-  font-size: 16px;
-  transition: 0.2s ease;
 }
 
-.delete-btn:hover {
-  transform: scale(1.1);
-}
-
-/* View Details Button (UNCHANGED STYLE) */
+/* Expand button */
 .view-details-btn {
   background-color: #e6f2ff;
   border: none;
@@ -142,15 +125,59 @@ html, body {
   color: #333;
 }
 
+/* Comments styling */
 .incident-details ul {
-  padding-left: 20px;
+  padding-left: 0;
+  list-style: none;
+  margin: 10px 0;
 }
+
+.incident-details li {
+  background: #f2f8ff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+/* Comment form */
+.incident-details form {
+  margin-top: 10px;
+}
+
+.incident-details input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 8px;
+}
+
+.incident-details input:focus {
+  border-color: #2a5e8b;
+  outline: none;
+  box-shadow: 0 0 4px rgba(42, 94, 139, 0.4);
+}
+
+.submit-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #2a5e8b;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #1f4770;
+}
+
 /* ============================= */
 /* Pagination */
 /* ============================= */
 
 .pagination {
-  margin-top: 10px;
+  margin-top: 20px;
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -174,54 +201,36 @@ html, body {
   cursor: not-allowed;
 }
 
-/* ============================= */
-/* Form Section */
-/* ============================= */
-
-.form-container {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.15);
-  max-width: 420px;
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-form label {
+.filter-section label {
   font-weight: 600;
-  margin-top: 10px;
-  display: block;
+  color: #1e3a5a;
 }
 
-form input,
-form textarea,
-form select {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
+.status-filter {
+  padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
+  border: 1px solid #2a5e8b;
+  background: white;
+  font-weight: 500;
+  cursor: pointer;
 }
 
-form input:focus,
-form textarea:focus,
-form select:focus {
-  border-color: #2a5e8b;
+.status-filter:focus {
   outline: none;
+  border-color: #1f4770;
   box-shadow: 0 0 4px rgba(42, 94, 139, 0.4);
 }
 
-.submit-btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  background-color: #2a5e8b;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.submit-btn:hover {
-  background-color: #1f4770;
+.no-incidents-text {
+  font-style: italic;
+  color: gray;
+  text-align: center;
+  margin: 20px 0;
 }

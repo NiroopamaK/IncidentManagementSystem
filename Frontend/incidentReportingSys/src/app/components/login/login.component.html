@@ -37,14 +37,31 @@
         </div>
 
         <!-- SIGN UP FORM -->
+        <!-- SIGN UP FORM -->
         <div *ngIf="isSignUp">
           <h2>Sign Up</h2>
+
+          <!-- Success / Error Messages -->
+          <div *ngIf="successMessage" class="success-message">
+            {{ successMessage }}
+          </div>
+          <div *ngIf="errorMessage" class="error-message">
+            {{ errorMessage }}
+          </div>
+          <div *ngIf="loading" class="loading">Processing...</div>
 
           <form
             [formGroup]="signupForm"
             (ngSubmit)="onSignUpSubmit()"
             novalidate
           >
+            <label>Username</label>
+            <input
+              type="text"
+              formControlName="username"
+              placeholder="Enter Username"
+            />
+
             <label>Email</label>
             <input
               type="email"
@@ -62,9 +79,9 @@
             <label>Role</label>
             <select formControlName="role">
               <option value="">Select Role</option>
-              <option value="admin">Admin</option>
-              <option value="reporter">User</option>
-              <option value="reviewer">Reviewer</option>
+              <option value="ADMIN">Admin</option>
+              <option value="REPORTER">User</option>
+              <option value="REVIEWER">Reviewer</option>
             </select>
 
             <button type="submit" class="submit-btn">Create Account</button>
