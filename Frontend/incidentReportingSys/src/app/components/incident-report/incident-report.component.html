@@ -114,19 +114,10 @@
                 Description is required and must be at most 500 characters.
               </div>
             </div>
-
-            <!-- Save/Cancel buttons already in the row; optional: duplicate here if you want -->
-            <!--
-    <div class="edit-actions">
-      <button (click)="saveEdit(incident)" [disabled]="ef.invalid">💾</button>
-      <button (click)="cancelEdit(incident)">❌</button>
-    </div>
-    -->
           </ng-container>
 
           <p><strong>Assigned to:</strong> {{ incident.assignedUserName }}</p>
 
-          <!-- COMMENTS -->
           <!-- COMMENTS -->
           <div class="comments-section" *ngIf="incident.comments.length > 0">
             <h4 class="comments-title">Comments</h4>

@@ -35,7 +35,7 @@ export class AuthService {
       .post(
         `${this.baseUrl}/auth/login`,
         { email, password },
-        { responseType: 'text' }, // because backend returns String token
+        { responseType: 'text' },
       )
       .pipe(
         // auth.service.ts (login tap)
@@ -43,11 +43,10 @@ export class AuthService {
           if (isPlatformBrowser(this.platformId)) {
             localStorage.setItem('token', token);
 
-            // Decode payload
             const payload = JSON.parse(atob(token.split('.')[1]));
 
             const user: User = {
-              id: payload.id, // now available from JWT
+              id: payload.id,
               username: payload.sub,
               email: payload.sub,
               role: payload.role,
@@ -76,7 +75,6 @@ export class AuthService {
 
   // GET TOKEN
   getToken(): string {
-    // Check if we are running in the browser
     if (typeof window === 'undefined') {
       throw new Error(
         'Cannot access token during SSR (server-side rendering).',
@@ -110,10 +108,7 @@ export class AuthService {
   }
 
   getUsersByRole(role: 'REPORTER' | 'REVIEWER' | 'ADMIN'): Observable<User[]> {
-    // Optionally attach auth headers
-    // const headers = this.authService.getAuthHeaders();
     return this.http.get<User[]>(`${this.baseUrl}/users/role/${role}`);
-    // If using headers: return this.http.get<User[]>(url, { headers });
   }
 
   getAllUsers(): Observable<User[]> {

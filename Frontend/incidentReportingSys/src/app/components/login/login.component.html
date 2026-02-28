@@ -10,6 +10,14 @@
         <div *ngIf="!isSignUp">
           <h2>Login</h2>
 
+          <div *ngIf="signupSuccessMessage" class="success-message">
+            {{ signupSuccessMessage }}
+          </div>
+
+          <div *ngIf="errorMessage && !isSignUp" class="error-message">
+            {{ errorMessage }}
+          </div>
+
           <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
             <label>Email</label>
             <input
@@ -17,6 +25,19 @@
               formControlName="email"
               placeholder="Enter Email"
             />
+
+            <div
+              class="error"
+              *ngIf="email?.invalid && (email?.touched || email?.dirty)"
+            >
+              <span *ngIf="email?.errors?.['required']">
+                Email is required
+              </span>
+
+              <span *ngIf="email?.errors?.['email']">
+                Invalid email format
+              </span>
+            </div>
 
             <label>Password</label>
             <input
@@ -68,19 +89,99 @@
               formControlName="email"
               placeholder="Enter Email"
             />
+            <div
+              class="error"
+              *ngIf="
+                signUpEmail?.invalid &&
+                (signUpEmail?.touched || signUpEmail?.dirty)
+              "
+            >
+              <span *ngIf="signUpEmail?.errors?.['required']">
+                Email is required
+              </span>
+
+              <span *ngIf="signUpEmail?.errors?.['email']">
+                Invalid email format
+              </span>
+            </div>
 
             <label>Password</label>
-            <input
-              type="password"
-              formControlName="password"
-              placeholder="Enter Password"
-            />
+            <div class="password-wrapper">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="Enter Password"
+              />
+              <span class="toggle-eye" (click)="showPassword = !showPassword">
+                {{ showPassword ? "🙈" : "👁" }}
+              </span>
+            </div>
+
+            <!-- Inline error messages -->
+            <div
+              class="error"
+              *ngIf="
+                signupPassword?.invalid &&
+                (signupPassword?.touched || signupPassword?.dirty)
+              "
+            >
+              <span *ngIf="signupPassword?.errors?.['required']">
+                Password is required
+              </span>
+
+              <span *ngIf="signupPassword?.errors?.['minlength']">
+                Password must be at least 8 characters
+              </span>
+
+              <span *ngIf="signupPassword?.errors?.['pattern']">
+                Must contain uppercase, lowercase, and a number
+              </span>
+            </div>
+
+            <!-- Password rules checklist -->
+            <ul class="password-rules" *ngIf="signupPassword?.touched">
+              <li [class.valid]="passwordMinLength">At least 8 characters</li>
+              <li [class.valid]="passwordHasUppercase">One uppercase letter</li>
+              <li [class.valid]="passwordHasLowercase">One lowercase letter</li>
+              <li [class.valid]="passwordHasNumber">One number</li>
+            </ul>
+
+            <label>Confirm Password</label>
+            <div class="password-wrapper">
+              <input
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                formControlName="confirmPassword"
+                placeholder="Retype Password"
+              />
+              <span
+                class="toggle-eye"
+                (click)="showConfirmPassword = !showConfirmPassword"
+              >
+                {{ showConfirmPassword ? "🙈" : "👁" }}
+              </span>
+            </div>
+
+            <div
+              class="error"
+              *ngIf="
+                confirmPassword?.invalid &&
+                (confirmPassword?.touched || confirmPassword?.dirty)
+              "
+            >
+              <span *ngIf="confirmPassword?.errors?.['required']">
+                Confirm password is required
+              </span>
+
+              <span *ngIf="confirmPassword?.errors?.['mismatch']">
+                Passwords do not match
+              </span>
+            </div>
 
             <label>Role</label>
             <select formControlName="role">
               <option value="">Select Role</option>
               <option value="ADMIN">Admin</option>
-              <option value="REPORTER">User</option>
+              <option value="REPORTER">Reporter</option>
               <option value="REVIEWER">Reviewer</option>
             </select>
 

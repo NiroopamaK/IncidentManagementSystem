@@ -27,14 +27,12 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
 
-        // Use SimpleGrantedAuthority so it matches your hasAnyAuthority() in the
-        // controller
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
 
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail()) // email used internally as username
+                .username(user.getEmail())
                 .password(user.getPassword())
-                .authorities(Collections.singleton(authority)) // <- use authorities, not roles
+                .authorities(Collections.singleton(authority))
                 .build();
     }
 }

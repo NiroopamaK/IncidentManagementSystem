@@ -25,7 +25,7 @@
           <h3 class="incident-title">{{ incident.title }}</h3>
 
           <div class="incident-actions">
-            <!-- Editable Status -->
+            <!-- Editable Status 
             <select
               #statusSelect
               class="status"
@@ -33,6 +33,15 @@
               (change)="updateStatus(incident, statusSelect.value)"
             >
               <option *ngFor="let s of incidentStatuses" [value]="s">
+                {{ s }}
+              </option>
+            </select>-->
+            <select
+              class="status"
+              [(ngModel)]="incident.status"
+              (ngModelChange)="updateStatus(incident, $event)"
+            >
+              <option *ngFor="let s of incidentStatuses" [ngValue]="s">
                 {{ s }}
               </option>
             </select>

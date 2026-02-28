@@ -64,6 +64,7 @@ export class ReviewerDashboardComponent implements OnInit {
       next: (users) => {
         this.allUsers = users;
         this.loadAssignedIncidents();
+        console.log(this.incidents);
       },
       error: (err) => console.error('Error loading users', err),
     });
@@ -77,21 +78,20 @@ export class ReviewerDashboardComponent implements OnInit {
       next: (data) => {
         this.incidents = data.map((incident) => ({
           ...incident,
-          // Map backend status to enum
-          status:
-            incident.status === 'OPEN'
-              ? status.open
-              : incident.status === 'IN_PROGRESS'
-                ? status.in_progress
-                : incident.status === 'RESOLVED'
-                  ? status.resolved
-                  : incident.status,
+
+          // Keep backend status exactly as-is
+          status: incident.status as status,
+
+          // UI-only fields
           comments: [],
-          commentForm: this.fb.group({ message: ['', Validators.required] }),
+          commentForm: this.fb.group({
+            message: ['', Validators.required],
+          }),
           createdByName:
             this.allUsers.find((u) => u.id === incident.createdBy)?.username ||
             'N/A',
         }));
+
         this.loadCommentsForIncidents();
       },
       error: (err) => console.error('Error loading incidents', err),
@@ -130,6 +130,7 @@ export class ReviewerDashboardComponent implements OnInit {
   }
 
   // Update status
+  /*
   updateStatus(incident: Incident, newStatus: string) {
     if (!incident.id) return;
 
@@ -138,6 +139,32 @@ export class ReviewerDashboardComponent implements OnInit {
       .updateIncident(incident.id, updatedIncident)
       .subscribe({
         next: () => (incident.status = newStatus),
+        error: (err) => console.error('Error updating status', err),
+      });
+  }*/
+
+  updateStatus(incident: Incident, newStatus: string) {
+    if (!incident.id) return;
+
+    const updatedIncident: Incident = {
+      id: incident.id,
+      title: incident.title,
+      description: incident.description,
+      status: newStatus,
+      createdBy: incident.createdBy,
+      assignedTo: incident.assignedTo,
+    };
+
+    this.incidentService
+      .updateIncident(incident.id, updatedIncident)
+      .subscribe({
+        next: () => {
+          // Update locally for instant UI reaction
+          incident.status = newStatus as status;
+
+          // Force new object reference (ensures filter recalculates)
+          this.incidents = [...this.incidents];
+        },
         error: (err) => console.error('Error updating status', err),
       });
   }

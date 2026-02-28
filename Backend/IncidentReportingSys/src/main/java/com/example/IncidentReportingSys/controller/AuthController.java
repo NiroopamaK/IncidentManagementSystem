@@ -9,9 +9,13 @@ import com.example.IncidentReportingSys.model.AuthRequest;
 import com.example.IncidentReportingSys.model.User;
 import com.example.IncidentReportingSys.repository.UserRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+// @CrossOrigin(origins = "http://localhost:4200")
+@Tag(name = "Authentication", description = "Endpoints for user login")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -24,6 +28,7 @@ public class AuthController {
         this.userRepository = userRepository;
     }
 
+    @Operation(summary = "Login user", description = "Authenticate a user and return a JWT token")
     @PostMapping("/login")
     public String login(@RequestBody AuthRequest request) {
 

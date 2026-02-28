@@ -8,7 +8,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { User } from '../../Models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -20,11 +19,15 @@ import { User } from '../../Models/user.model';
 export class LoginComponent implements OnInit {
   isSignUp = false;
 
-  loginForm!: FormGroup; // ✅ ADD THIS
+  loginForm!: FormGroup;
   signupForm!: FormGroup;
   errorMessage: string = '';
   successMessage: string = '';
   loading: boolean = false;
+  signupSuccessMessage: string = '';
+  // Show/hide password
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -38,20 +41,36 @@ export class LoginComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(2)]],
     });
 
-    this.signupForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(4)]],
-      role: ['', Validators.required],
-    });
+    this.signupForm = this.fb.group(
+      {
+        username: ['', [Validators.required, Validators.minLength(3)]],
+        email: ['', [Validators.required, Validators.email]],
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/),
+          ],
+        ],
+        confirmPassword: ['', Validators.required],
+        role: ['', Validators.required],
+      },
+      {
+        validators: this.passwordsMatchValidator,
+      },
+    );
   }
 
   showSignUp() {
     this.isSignUp = true;
+    this.errorMessage = '';
+    this.signupSuccessMessage = '';
   }
 
   showLogin() {
     this.isSignUp = false;
+    this.errorMessage = '';
   }
 
   onSubmit() {
@@ -90,7 +109,13 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = 'Invalid email or password';
+
+        if (err.status === 401) {
+          this.errorMessage = 'Invalid email or password.';
+        } else {
+          this.errorMessage = 'Login failed.';
+        }
+
         console.error(err);
       },
     });
@@ -118,17 +143,72 @@ export class LoginComponent implements OnInit {
     this.authService.signup(payload).subscribe({
       next: (user) => {
         this.loading = false;
-        this.successMessage =
+        this.signupSuccessMessage =
           'Account created successfully! You can now log in.';
         this.signupForm.reset();
         this.isSignUp = false; // switch to login form
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage =
-          err?.error?.message || 'Failed to create account. Please try again.';
+
+        if (err.status === 409) {
+          this.errorMessage = 'Email already exists.';
+        } else if (err.status === 400) {
+          this.errorMessage = 'Invalid input data.';
+        } else {
+          this.errorMessage = 'Failed to create account. Please try again.';
+        }
+
         console.error('Signup error:', err);
       },
     });
+  }
+
+  get email() {
+    return this.loginForm.get('email');
+  }
+
+  get signUpEmail() {
+    return this.signupForm.get('email');
+  }
+
+  get signupPassword() {
+    return this.signupForm.get('password');
+  }
+
+  get passwordHasUppercase(): boolean {
+    const val = this.signupPassword?.value || '';
+    return /[A-Z]/.test(val);
+  }
+
+  get passwordHasLowercase(): boolean {
+    const val = this.signupPassword?.value || '';
+    return /[a-z]/.test(val);
+  }
+
+  get passwordHasNumber(): boolean {
+    const val = this.signupPassword?.value || '';
+    return /\d/.test(val);
+  }
+
+  get passwordMinLength(): boolean {
+    const val = this.signupPassword?.value || '';
+    return val.length >= 8;
+  }
+
+  get confirmPassword() {
+    return this.signupForm.get('confirmPassword');
+  }
+
+  passwordsMatchValidator(form: FormGroup) {
+    const password = form.get('password')?.value;
+    const confirmPassword = form.get('confirmPassword')?.value;
+
+    if (password !== confirmPassword) {
+      form.get('confirmPassword')?.setErrors({ mismatch: true });
+    } else {
+      form.get('confirmPassword')?.setErrors(null);
+    }
+    return null;
   }
 }

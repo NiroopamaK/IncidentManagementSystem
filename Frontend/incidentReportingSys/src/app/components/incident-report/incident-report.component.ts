@@ -66,22 +66,18 @@ export class IncidentReportComponent implements OnInit {
     });
   }
 
-  // =========================
   // USERS
-  // =========================
   loadUsers() {
     this.authService.getUsersByRole('REVIEWER').subscribe({
       next: (data) => {
         this.users = data;
-        this.loadIncidents(); // load incidents after users so we can attach usernames
+        this.loadIncidents();
       },
       error: (err) => console.error('Error fetching users', err),
     });
   }
 
-  // =========================
   // INCIDENTS
-  // =========================
   loadIncidents() {
     if (!this.currentUser || this.currentUser.id == null) return;
 
@@ -104,9 +100,7 @@ export class IncidentReportComponent implements OnInit {
     });
   }
 
-  // =========================
   // COMMENTS
-  // =========================
   loadComments() {
     this.incidents.forEach((incident) => {
       if (!incident.id) return;
@@ -125,9 +119,7 @@ export class IncidentReportComponent implements OnInit {
     });
   }
 
-  // =========================
   // CREATE INCIDENT
-  // =========================
   submitForm() {
     if (!this.incidentForm.valid || !this.currentUser?.id) return;
 
@@ -157,9 +149,7 @@ export class IncidentReportComponent implements OnInit {
     });
   }
 
-  // =========================
   // PAGINATION & FILTER
-  // =========================
   get paginatedIncidents() {
     const filtered =
       this.filteredStatus === 'ALL'
@@ -189,9 +179,7 @@ export class IncidentReportComponent implements OnInit {
     this.expandedIncidents[index] = !this.expandedIncidents[index];
   }
 
-  // =========================
   // EDIT INCIDENT
-  // =========================
   startEdit(incident: any, index?: number) {
     incident.isEditing = true;
     incident.editForm = this.fb.group({
@@ -240,9 +228,7 @@ export class IncidentReportComponent implements OnInit {
     incident.editForm = undefined;
   }
 
-  // =========================
   // DELETE INCIDENT
-  // =========================
   deleteIncident(index: number) {
     const incident = this.paginatedIncidents[index];
     if (!incident?.id) return;

@@ -8,13 +8,13 @@ import { Comment } from '../Models/comment.model';
   providedIn: 'root',
 })
 export class CommentService {
-  private baseUrl = 'http://localhost:8080/comments'; // Spring Boot backend URL
+  private baseUrl = 'http://localhost:8080/comments';
 
   constructor(private http: HttpClient) {}
 
   // Helper to add Authorization header
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token'); // assuming JWT stored in localStorage
+    const token = localStorage.getItem('token');
     return new HttpHeaders({
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
