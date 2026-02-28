@@ -32,8 +32,8 @@ Communication: Frontend calls backend API; backend handles authentication, autho
 
 5️⃣ Docker Setup
 
-Access frontend: http://localhost:4200
-Access backend API: http://localhost:8080
+- Access frontend: http://localhost:4200
+- Access backend API: http://localhost:8080
 Database persists in Docker volume db_data.
 
 How to run:
